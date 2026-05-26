@@ -1,0 +1,32 @@
+<div class="login-page" dir="rtl">
+
+  <section class="login-hero">
+    <div class="login-overlay">
+      <div class="login-card">
+
+        <div class="logo-badge">Real Estate</div>
+
+        <h1>כניסת סוכן</h1>
+        <p class="subtitle">הכניסי את המייל שלך כדי להתחבר למערכת</p>
+
+        <label for="agentEmail">מייל סוכן</label>
+        <input
+          id="agentEmail"
+          type="email"
+          [(ngModel)]="agentEmail"
+          placeholder="agent@example.com"
+        />
+
+        <button class="primary-btn" type="button" (click)="login()">
+          כניסה
+        </button>
+
+        <button class="secondary-btn" type="button" [routerLink]="['/']">
+          חזרה לאתר
+        </button>
+
+      </div>
+    </div>
+  </section>
+
+</div>

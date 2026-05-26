@@ -1,0 +1,87 @@
+<div class="details-page" dir="rtl" *ngIf="apartment">
+
+  <section class="details-hero">
+    <div class="hero-overlay">
+      <div class="hero-content">
+        <span class="hero-badge">{{ apartment.StatusName }}</span>
+        <h1>{{ apartment.Title }}</h1>
+        <p class="hero-subtitle">{{ apartment.CityName }}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="details-wrapper">
+
+    <div class="main-grid">
+
+      <div class="image-card">
+        <img
+          [src]="apartment.ImageUrl || 'assets/images/apartments/default.jpg'"
+          [alt]="apartment.Title"
+        />
+      </div>
+
+      <div class="summary-card">
+        <div class="price-box">
+          <span class="label">מחיר</span>
+          <span class="price">{{ apartment.Price | number }} ₪</span>
+        </div>
+
+        <div class="quick-info">
+          <div class="info-item">
+            <span class="info-label">עיר</span>
+            <span class="info-value">{{ apartment.CityName }}</span>
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">סטטוס</span>
+            <span class="info-value">{{ apartment.StatusName }}</span>
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">סוכן</span>
+            <span class="info-value">{{ apartment.AgentName }}</span>
+          </div>
+
+          <div class="info-item">
+            <span class="info-label">תאריך יצירה</span>
+            <span class="info-value">{{ apartment.CreatedDate | date:'dd/MM/yyyy' }}</span>
+          </div>
+        </div>
+
+        <div class="action-buttons">
+          <button class="secondary-btn" (click)="goBack()">חזרה לרשימה</button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="details-card">
+      <h2>פרטי הנכס</h2>
+
+      <div class="details-grid">
+        <div class="detail-row">
+          <span class="detail-label">מזהה מערכת</span>
+          <span class="detail-value">{{ apartment.ApartmentID }}</span>
+        </div>
+
+        <div class="detail-row">
+          <span class="detail-label">כותרת</span>
+          <span class="detail-value">{{ apartment.Title }}</span>
+        </div>
+
+        <div class="detail-row description-row">
+          <span class="detail-label">תיאור</span>
+          <p class="description-text">{{ apartment.Description }}</p>
+        </div>
+      </div>
+    </div>
+
+  </section>
+</div>
+
+<div *ngIf="!apartment" class="loading-page" dir="rtl">
+  <div class="loading-card">
+    <p>טוען פרטי דירה...</p>
+  </div>
+</div>

@@ -1,0 +1,121 @@
+<div class="form-page" dir="rtl">
+
+  <section class="form-hero">
+    <div class="form-hero-overlay">
+      <div class="form-hero-content">
+        <span class="hero-badge">{{ isEditMode ? 'עריכת דירה' : 'הוספת דירה חדשה' }}</span>
+        <h1>{{ isEditMode ? 'עדכון פרטי נכס' : 'הזנת נכס חדש למערכת' }}</h1>
+        <p>
+          {{ isEditMode
+            ? 'עדכני את פרטי הדירה ושמרי את השינויים'
+            : 'מלאי את הפרטים הנדרשים כדי להוסיף דירה חדשה' }}
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="form-wrapper">
+
+    <div class="form-card" *ngIf="!isLoading">
+      <form [formGroup]="apartmentForm" (ngSubmit)="saveApartment()">
+
+        <div class="form-grid">
+
+          <div class="field-group full-width">
+            <label for="title">כותרת</label>
+            <input id="title" type="text" formControlName="Title" placeholder="לדוגמה: פנטהאוז יוקרתי במרכז העיר" />
+            <div class="error" *ngIf="f['Title'].touched && f['Title'].invalid">
+              יש להזין כותרת תקינה
+            </div>
+          </div>
+
+          <div class="field-group full-width">
+            <label for="description">תיאור</label>
+            <textarea
+              id="description"
+              rows="5"
+              formControlName="Description"
+              placeholder="תיאור הנכס, מאפיינים בולטים, מיקום ועוד"></textarea>
+            <div class="error" *ngIf="f['Description'].touched && f['Description'].invalid">
+              יש להזין תיאור תקין
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="price">מחיר</label>
+            <input id="price" type="number" formControlName="Price" placeholder="למשל 2500000" />
+            <div class="error" *ngIf="f['Price'].touched && f['Price'].invalid">
+              יש להזין מחיר גדול מ־0
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="city">עיר</label>
+            <select id="city" formControlName="CityID">
+              <option [ngValue]="null">בחרי עיר</option>
+              <option *ngFor="let city of cities" [value]="city.CityID">
+                {{ city.CityName }}
+              </option>
+            </select>
+            <div class="error" *ngIf="f['CityID'].touched && f['CityID'].invalid">
+              יש לבחור עיר
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="status">סטטוס</label>
+            <select id="status" formControlName="StatusID">
+              <option [ngValue]="null">בחרי סטטוס</option>
+              <option *ngFor="let status of statuses" [value]="status.StatusID">
+                {{ status.StatusName }}
+              </option>
+            </select>
+            <div class="error" *ngIf="f['StatusID'].touched && f['StatusID'].invalid">
+              יש לבחור סטטוס
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="agent">סוכן</label>
+            <select id="agent" formControlName="AgentID">
+              <option [ngValue]="null">בחרי סוכן</option>
+              <option *ngFor="let agent of agents" [value]="agent.AgentID">
+                {{ agent.FullName }}
+              </option>
+            </select>
+            <div class="error" *ngIf="f['AgentID'].touched && f['AgentID'].invalid">
+              יש לבחור סוכן
+            </div>
+          </div>
+
+          <div class="field-group full-width">
+            <label for="imageUrl">נתיב תמונה</label>
+            <input
+              id="imageUrl"
+              type="text"
+              formControlName="ImageUrl"
+              placeholder="assets/images/apartments/apartment1.jpg"
+            />
+          </div>
+
+        </div>
+
+        <div class="actions-row">
+          <button class="primary-btn" type="submit">
+            {{ isEditMode ? 'שמירת שינויים' : 'הוספת דירה' }}
+          </button>
+
+          <button class="secondary-btn" type="button" (click)="cancel()">
+            ביטול
+          </button>
+        </div>
+
+      </form>
+    </div>
+
+    <div class="loading-card" *ngIf="isLoading">
+      <p>טוען נתונים...</p>
+    </div>
+
+  </section>
+</div>

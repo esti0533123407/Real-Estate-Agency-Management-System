@@ -1,0 +1,172 @@
+<div class="page" dir="rtl">
+
+  <header class="hero-section">
+    <div class="hero-overlay">
+      <div class="top-bar">
+
+        <div class="brand-area">
+          <h1>מערכת תיווך דירות</h1>
+          <p>מצאי את הדירה שמתאימה בדיוק לך</p>
+        </div>
+
+        <div class="user-actions">
+          <button
+            class="secondary-btn"
+            *ngIf="!authService.isAgent()"
+            [routerLink]="['/login']">
+            כניסת סוכן
+          </button>
+
+          <div class="agent-box" *ngIf="authService.isAgent()">
+            <span>מחוברת כסוכנת: {{ authService.getAgentName() }}</span>
+            <button class="secondary-btn" (click)="logout()">התנתקות</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <section class="content-wrapper">
+
+    <div class="filters-card">
+      <div class="filters-header">
+        <h2>חיפוש וסינון דירות</h2>
+        <p>סנני לפי עיר, סטטוס, מחיר או כותרת</p>
+      </div>
+
+      <div class="filters-grid">
+
+        <div class="field-group">
+          <label>חיפוש לפי כותרת</label>
+          <input
+            type="text"
+            [(ngModel)]="searchText"
+            placeholder="לדוגמה: דירת גן, פנטהאוז..."
+          />
+        </div>
+
+        <div class="field-group">
+          <label>עיר</label>
+          <select [(ngModel)]="selectedCityId">
+            <option [ngValue]="null">כל הערים</option>
+            <option *ngFor="let city of cities" [ngValue]="city.CityID">
+              {{ city.CityName }}
+            </option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label>סטטוס</label>
+          <select [(ngModel)]="selectedStatusId">
+            <option [ngValue]="null">כל הסטטוסים</option>
+            <option *ngFor="let status of statuses" [ngValue]="status.StatusID">
+              {{ status.StatusName }}
+            </option>
+          </select>
+        </div>
+
+        <div class="field-group">
+          <label>מחיר מינימלי</label>
+          <input
+            type="number"
+            [(ngModel)]="minPrice"
+            placeholder="למשל 500000"
+          />
+        </div>
+
+        <div class="field-group">
+          <label>מחיר מקסימלי</label>
+          <input
+            type="number"
+            [(ngModel)]="maxPrice"
+            placeholder="למשל 3000000"
+          />
+        </div>
+
+      </div>
+
+      <div class="filters-actions">
+        <button class="primary-btn" (click)="onSearch()">סינון</button>
+        <button class="secondary-btn" type="button" (click)="clearFilters()">נקה סינונים</button>
+
+        <button
+          class="primary-btn add-btn"
+          *ngIf="authService.isAgent()"
+          [routerLink]="['/add']">
+          + הוספת דירה חדשה
+        </button>
+      </div>
+    </div>
+
+    <div class="results-header">
+      <h2>דירות זמינות</h2>
+      <span class="results-count">נמצאו {{ apartments.length }} דירות</span>
+    </div>
+
+    <div *ngIf="apartments.length > 0" class="apartments-grid">
+
+      <div class="apartment-card" *ngFor="let apt of apartments">
+
+        <div class="image-wrapper">
+         <img
+  [src]="apt.ImageUrl || 'assets/Image/default.jpg'"
+  [alt]="apt.Title"
+/>
+          <span class="status-badge">{{ apt.StatusName }}</span>
+        </div>
+
+        <div class="card-body">
+          <div class="card-header-row">
+            <h3>{{ apt.Title }}</h3>
+            <span class="apartment-code">#{{ apt.ApartmentID }}</span>
+          </div>
+
+          <p class="city-line">{{ apt.CityName }}</p>
+
+          <p class="price-line">{{ apt.Price | number }} ₪</p>
+
+          <div class="meta-grid">
+            <div class="meta-item">
+              <span class="meta-label">סוכן</span>
+              <span class="meta-value">{{ apt.AgentName }}</span>
+            </div>
+
+            <div class="meta-item">
+              <span class="meta-label">תאריך יצירה</span>
+              <span class="meta-value">{{ apt.CreatedDate | date:'dd/MM/yyyy' }}</span>
+            </div>
+          </div>
+
+          <div class="card-actions">
+            <button class="view-btn" [routerLink]="['/details', apt.ApartmentID]">
+              צפייה
+            </button>
+
+            <button
+              class="edit-btn"
+              *ngIf="authService.isAgent()"
+              [routerLink]="['/edit', apt.ApartmentID]">
+              עריכה
+            </button>
+
+            <button
+              class="delete-btn"
+              *ngIf="authService.isAgent()"
+              (click)="deleteApartment(apt.ApartmentID)">
+              מחיקה
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div *ngIf="apartments.length === 0" class="empty-state">
+      <h3>לא נמצאו דירות להצגה</h3>
+      <p>נסי לשנות את הסינונים או לנקות את החיפוש.</p>
+    </div>
+
+  </section>
+</div>
