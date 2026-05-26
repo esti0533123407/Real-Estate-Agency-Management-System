@@ -86,12 +86,13 @@ All database interactions are abstracted behind dedicated database routines:
 ## API Design & Unified Endpoint
 To comply with the project guidelines, the .NET backend avoids split individual REST paths, exposing instead a **single dynamic POST route** that acts as an orchestration gateway:
 
-```http
-POST /api/exec
-Request Structure
+### POST /api/exec
+
+#### Request Structure
 Clients push an instruction block containing the targeted procedure identifier accompanied by a dictionary of execution parameters.
-Example Payload:
-JSON
+
+#### Example Payload (JSON):
+```json
 {
   "procedureName": "CreateApartment",
   "parameters": {
