@@ -1,131 +1,105 @@
-Real Estate Agency Management System
-Project Overview
-This project is a full-stack application developed as a preparation project for the practicum course.
+# Real Estate Agency Management System
 
-The system manages real estate properties, agents, and the selling/renting process of apartments.
+## Project Overview
+This project is a full-stack web application developed as a preparation project for the final practicum course. The system provides a comprehensive management pipeline for real estate agencies, handling property listings, active agents, and the buying/renting lifecycles of various apartments.
 
-The architecture follows a three-layer structure:
+To ensure consistency, security, and performance, the system is strictly built using a **Three-Layer Architecture**:
 
-Angular Client → .NET Web API → SQL Server Database
+Angular Client ──> .NET Web API ──> SQL Server Database
 
-All communication with the database is performed using Stored Procedures only, as required by the project instructions.
+>  **Important Constraint:** In compliance with the project specifications, all communication, queries, and data modifications within the database layer are performed **exclusively using Stored Procedures**. Direct inline SQL queries or generic table-level operations are not permitted.
 
-Technologies
-Database
-SQL Server
+---
 
-Server Side
-.NET Web API (C#)
+## Technical Stack
+* **Database:** Microsoft SQL Server
+* **Backend Server:** .NET Web API (C#)
+* **Frontend Client:** Angular (TypeScript)
+* **Communication Protocol:** RESTful API via a Single Unified Endpoint
 
-Client Side
-Angular
+---
 
-System Architecture
-The system is built using three layers:
+## System Architecture & Data Flow
+The logical layout is structured into three highly decoupled layers:
 
-Client (Angular)
-Handles UI, routing, forms, and API communication.
+1. **Client (Angular):** Responsible for managing the user interface, client-side routing, interactive forms, validation state, and handling asynchronous API dispatches.
+2. **API (.NET Web API):** Serves as a secure processing layer. It intercepts incoming HTTP POST payloads from the client, extracts the targeting parameters, and delegates execution directly to the database layer.
+3. **Database (SQL Server):** Persists all operational records and contains the core business logic wrapped inside compiled stored procedures.
 
-API (.NET Web API)
-Receives requests from Angular and executes stored procedures.
+**Workflow Diagram:**
+Angular Frontend  ──>  .NET API Gateway  ──>  SQL Server Stored Procedure
+▲                                                 │
+└──────────────────  JSON Response  ──────────────┘
 
-Database (SQL Server)
-Stores all system data and contains the stored procedures.
+---
 
-Flow of the system:
+## Database Schema
+The relational database layer consists of four primary tables:
 
-Angular → API → SQL Server → API → Angular
+### 1. `Apartments` (Main Ledger)
+Stores data regarding the real estate assets.
+* `ApartmentID` (Primary Key)
+* `Title`
+* `Description`
+* `Price`
+* `CityID` (Foreign Key ──> `Cities`)
+* `StatusID` (Foreign Key ──> `Statuses`)
+* `AgentID` (Foreign Key ──> `Agents`)
+* `CreatedDate`
 
-Database Structure
-The database contains four main tables.
+### 2. `Cities` (Lookup)
+Defines supported geographical territories.
+* `CityID` (Primary Key)
+* `CityName`
 
-Apartments (Main Table)
-Stores the real estate properties.
+### 3. `Statuses` (Lookup)
+Maintains operational listing states (*e.g., For Sale, For Rent, Sold*).
+* `StatusID` (Primary Key)
+* `StatusName`
 
-Fields:
+### 4. `Agents` (Registry)
+Tracks real estate professionals managing the inventory.
+* `AgentID` (Primary Key)
+* `FullName`
+* `Email`
 
-ApartmentID
-Title
-Description
-Price
-CityID
-StatusID
-AgentID
-CreatedDate
-Relationships:
+---
 
-CityID → Cities table
-StatusID → Statuses table
-AgentID → Agents table
-Cities
-Stores the list of cities.
+## Stored Procedures Layer
+All database interactions are abstracted behind dedicated database routines:
 
-Fields:
+### Primary Operations
+* `CreateApartment`: Inserts a new listing into the records.
+* `UpdateApartment`: Commits modifications to an existing property's details.
+* `GetApartmentById`: Returns detailed fields of a specific asset using structural `JOIN` blocks to fetch descriptive data for City, Status, and Agent.
+* `GetAllApartments`: Returns a complete array of records supporting custom search terms and catalog filters.
+* `DeleteApartment`: Removes a property from the active registry.
 
-CityID
-CityName
-Statuses
-Stores property status values.
+### Utility & Reference Lookups
+* `GetAllCities`: Returns the complete lookup set for city components.
+* `GetAllStatuses`: Returns available status metrics for listings.
+* `GetAllAgents`: Fetches agent contact records to populate relational selectors.
+* `GetApartmentsByAgent`: Filters the active inventory to show records belonging to a single agent.
 
-Examples:
+---
 
-For Sale
-For Rent
-Sold
-Fields:
+## API Design & Unified Endpoint
+To comply with the project guidelines, the .NET backend avoids split individual REST paths, exposing instead a **single dynamic POST route** that acts as an orchestration gateway:
 
-StatusID
-StatusName
-Agents
-Stores the real estate agents.
-
-Fields:
-
-AgentID
-FullName
-Email
-Stored Procedures
-All database operations are implemented through stored procedures.
-
-Main procedures:
-
-CreateApartment
-Creates a new property.
-
-UpdateApartment
-Updates an existing property.
-
-GetApartmentById
-Returns full details of a specific property including joined information.
-
-GetAllApartments
-Returns the list of all properties with search and filters.
-
-DeleteApartment
-Deletes a property.
-
-Additional procedures:
-
-GetAllCities
-Returns city list.
-
-GetAllStatuses
-Returns status list.
-
-GetAllAgents
-Returns agents list.
-
-GetApartmentsByAgent
-Returns properties belonging to a specific agent.
-
-API
-The API contains a single endpoint as required by the project instructions.
-
+```http
 POST /api/exec
-
-The request contains:
-
-procedureName
-parameters
-
-Example request:
+Request Structure
+Clients push an instruction block containing the targeted procedure identifier accompanied by a dictionary of execution parameters.
+Example Payload:
+JSON
+{
+  "procedureName": "CreateApartment",
+  "parameters": {
+    "Title": "Modern 3-Room Penthouse",
+    "Description": "Spacious asset with a panoramic view, close to central transit.",
+    "Price": 2450000,
+    "CityID": 1,
+    "StatusID": 2,
+    "AgentID": 3
+  }
+}
